@@ -1,3 +1,7 @@
+%if 0%{?fedora}
+%global with_python3 1
+%endif
+
 %global srcname urllib3
 
 Name:           python-%{srcname}
@@ -47,6 +51,7 @@ BuildRequires:  python-tornado
 Python2 HTTP module with connection pooling and file POST abilities.
 
 
+%if 0%{?with_python3}
 %package -n python3-%{srcname}
 Summary:        Python3 HTTP library with thread-safe connection pooling and file post
 
@@ -69,7 +74,7 @@ Requires:       python3-pysocks
 
 %description -n python3-%{srcname}
 Python3 HTTP module with connection pooling and file POST abilities.
-
+%endif
 
 %prep
 %setup -q -n %{srcname}-%{version}
@@ -82,12 +87,16 @@ rm -rf test/contrib/
 
 %build
 %py2_build
+%if 0%{?with_python3}
 %py3_build
+%endif
 
 
 %install
 %py2_install
+%if 0%{?with_python3}
 %py3_install
+%endif
 
 # Unbundle the Python 2 build
 rm -rf %{buildroot}/%{python2_sitelib}/urllib3/packages/six.py*
@@ -100,6 +109,7 @@ ln -s ../../six.pyo %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyo
 
 ln -s ../../backports/ssl_match_hostname %{buildroot}/%{python2_sitelib}/urllib3/packages/ssl_match_hostname
 
+%if 0%{?with_python3}
 # Unbundle the Python 3 build
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/six.py*
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/ssl_match_hostname/
@@ -110,21 +120,28 @@ ln -s ../../six.py %{buildroot}/%{python3_sitelib}/urllib3/packages/six.py
 # which we ship in Fedora 26, so we can safely replace the bundled version with
 # this stub which imports the necessary objects.
 cp %{SOURCE1} %{buildroot}/%{python3_sitelib}/urllib3/packages/ssl_match_hostname.py
+%endif
 
 # Copy in six.py just for the test suite.
 cp %{python2_sitelib}/six.* %{buildroot}/%{python2_sitelib}/.
+%if 0%{?with_python3}
 cp %{python3_sitelib}/six.* %{buildroot}/%{python3_sitelib}/.
+%endif
 
 
 %check
 nosetests
+%if 0%{?with_python3}
 nosetests-%{python3_version}
+%endif
 
 # And after its done, remove our copied in bits
 rm -rf %{buildroot}/%{python2_sitelib}/six*
 rm -rf %{buildroot}/%{python2_sitelib}/backports*
+%if 0%{?with_python3}
 rm -rf %{buildroot}/%{python3_sitelib}/six*
 rm -rf %{buildroot}/%{python3_sitelib}/__pycache__*
+%endif
 
 
 %files -n python2-%{srcname}
@@ -134,11 +151,13 @@ rm -rf %{buildroot}/%{python3_sitelib}/__pycache__*
 %{python2_sitelib}/urllib3-*.egg-info
 
 
+%if 0%{?with_python3}
 %files -n python3-%{srcname}
 %license LICENSE.txt
 %doc CHANGES.rst README.rst CONTRIBUTORS.txt
 %{python3_sitelib}/urllib3/
 %{python3_sitelib}/urllib3-*.egg-info
+%endif
 
 
 %changelog
