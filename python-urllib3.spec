@@ -36,6 +36,12 @@ Requires:       python-idna
 Requires:       python-ipaddress
 Requires:       python-pysocks
 
+# See comment-block in the %%install section.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1231381
+%if (0%{?fedora} && 0%{?fedora} <= 21) || 0%{rhel}
+BuildRequires:  python-backports-ssl_match_hostname
+%endif
+
 BuildRequires:  python2-devel
 # For unittests
 BuildRequires:  python-nose
