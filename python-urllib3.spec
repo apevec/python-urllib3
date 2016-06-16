@@ -47,6 +47,18 @@ Requires:       ca-certificates
 Requires:       python-six
 Requires:       python-pysocks
 
+# See comment-block in the %%install section.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1231381
+%if (0%{?fedora} && 0%{?fedora} <= 21) || 0%{rhel}
+Requires:       python-backports-ssl_match_hostname
+BuildRequires:  python-backports-ssl_match_hostname
+%endif
+
+%if 0%{?rhel} && 0%{?rhel} <= 6
+BuildRequires:  python-ordereddict
+Requires:       python-ordereddict
+%endif
+
 BuildRequires:  python2-devel
 # For unittests
 BuildRequires:  python-nose
