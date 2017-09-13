@@ -16,7 +16,7 @@
 
 Name:           python-%{srcname}
 Version:        1.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python HTTP library with thread-safe connection pooling and file post
 
 License:        MIT
@@ -49,7 +49,7 @@ Requires:       python-pysocks
 
 # See comment-block in the %%install section.
 # https://bugzilla.redhat.com/show_bug.cgi?id=1231381
-%if (0%{?fedora} && 0%{?fedora} <= 21) || 0%{rhel}
+%if (0%{?fedora} && 0%{?fedora} <= 21) || 0%{?rhel}
 Requires:       python-backports-ssl_match_hostname
 BuildRequires:  python-backports-ssl_match_hostname
 %endif
@@ -216,6 +216,9 @@ rm -rf %{buildroot}/%{python3_sitelib}/__pycache__*
 %endif # with_python3
 
 %changelog
+* Wed Sep 13 2017 Jon Schlueter <jschluet@redhat.com> 1.16-2
+- fix bad if guard
+
 * Wed Jun 15 2016 Kevin Fenzi <kevin@scrye.com> - 1.16-1
 - Update to 1.16
 
