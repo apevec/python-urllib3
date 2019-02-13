@@ -1,5 +1,9 @@
 %global srcname urllib3
 
+%if 0%{?fedora} || 0%{?rhel} > 7
+%global with_python3 1
+%endif
+
 # When bootstrapping Python, we cannot test this yet
 %bcond_without tests
 
@@ -26,7 +30,7 @@ Requires:       ca-certificates
 
 # Previously bundled things:
 Requires:       python2-six
-Requires:       python2-backports-ssl_match_hostname
+Requires:       python-backports-ssl_match_hostname
 
 # Secure extra requirements
 Requires:       python2-ipaddress
@@ -34,9 +38,9 @@ Requires:       python2-pysocks
 
 BuildRequires:  python2-devel
 %if %{with tests}
-BuildRequires:  python2-backports-ssl_match_hostname
+BuildRequires:  python-backports-ssl_match_hostname
 BuildRequires:  python2-nose
-BuildRequires:  python2-nose-exclude
+BuildRequires:  python-nose-exclude
 BuildRequires:  python2-coverage
 BuildRequires:  python2-mock
 BuildRequires:  python2-six
@@ -48,7 +52,7 @@ BuildRequires:  python2-tornado
 %description -n python2-%{srcname}
 Python2 HTTP module with connection pooling and file POST abilities.
 
-
+%if 0%{?with_python3}
 %package -n python3-%{srcname}
 Summary:        Python3 HTTP library with thread-safe connection pooling and file post
 
@@ -69,6 +73,7 @@ Requires:       python3-pysocks
 %description -n python3-%{srcname}
 Python3 HTTP module with connection pooling and file POST abilities.
 
+%endif
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
@@ -87,24 +92,32 @@ rm -f test/test_no_ssl.py
 
 %build
 %py2_build
+%if 0%{?with_python3}
 %py3_build
+%endif
 
 
 %install
 %py2_install
+%if 0%{?with_python3}
 %py3_install
+%endif
 
 # Unbundle the Python 2 build
 rm -rf %{buildroot}/%{python2_sitelib}/urllib3/packages/six.py*
 rm -rf %{buildroot}/%{python2_sitelib}/urllib3/packages/ssl_match_hostname/
 
 mkdir -p %{buildroot}/%{python2_sitelib}/urllib3/packages/
-ln -s %{python2_sitelib}/six.py %{buildroot}/%{python2_sitelib}/urllib3/packages/six.py
-ln -s %{python2_sitelib}/six.pyc %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyc
-ln -s %{python2_sitelib}/six.pyo %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyo
+ln -s ../../six.py %{buildroot}/%{python2_sitelib}/urllib3/packages/six.py
+ln -s ../../six.pyc %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyc
+ln -s ../../six.pyo %{buildroot}/%{python2_sitelib}/urllib3/packages/six.pyo
 ln -s %{python2_sitelib}/backports/ssl_match_hostname \
       %{buildroot}/%{python2_sitelib}/urllib3/packages/ssl_match_hostname
 
+# We need this to run unit tests, will remove it later
+cp %{python2_sitelib}/six.py* %{buildroot}/%{python2_sitelib}/
+
+%if 0%{?with_python3}
 # Unbundle the Python 3 build
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/six.py*
 rm -rf %{buildroot}/%{python3_sitelib}/urllib3/packages/__pycache__/six*
@@ -117,15 +130,20 @@ ln -s %{python3_sitelib}/__pycache__/six.cpython-%{python3_version_nodots}.opt-1
       %{buildroot}/%{python3_sitelib}/urllib3/packages/__pycache__/
 ln -s %{python3_sitelib}/__pycache__/six.cpython-%{python3_version_nodots}.pyc \
       %{buildroot}/%{python3_sitelib}/urllib3/packages/__pycache__/
+%endif
 
 
 %if %{with tests}
 %check
 pushd test
 PYTHONPATH=%{buildroot}%{python2_sitelib}:%{python2_sitelib} %{__python2} -m pytest -v
+%if 0%{?with_python3}
 PYTHONPATH=%{buildroot}%{python3_sitelib}:%{python3_sitelib} %{__python3} -m pytest -v
+%endif
 popd
 %endif
+
+rm -f %{buildroot}/%{python2_sitelib}/six*
 
 
 %files -n python2-%{srcname}
@@ -135,12 +153,13 @@ popd
 %{python2_sitelib}/urllib3-*.egg-info
 
 
+%if 0%{?with_python3}
 %files -n python3-%{srcname}
 %license LICENSE.txt
 %doc CHANGES.rst README.rst CONTRIBUTORS.txt
 %{python3_sitelib}/urllib3/
 %{python3_sitelib}/urllib3-*.egg-info
-
+%endif
 
 %changelog
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.24.1-3
