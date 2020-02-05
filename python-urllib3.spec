@@ -1,7 +1,8 @@
+%{?python_enable_dependency_generator}
 %global srcname urllib3
 
 # When bootstrapping Python, we cannot test this yet
-%bcond_without tests
+%bcond_with tests
 
 Name:           python-%{srcname}
 Version:        1.25.7
