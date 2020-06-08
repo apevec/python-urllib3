@@ -35,7 +35,7 @@ BuildRequires:  python3-idna
 
 Requires:       ca-certificates
 Requires:       python3-idna
-Requires:       python3-six
+Requires:       python3-six >= 1.12.0
 Requires:       python3-pysocks
 
 %description -n python3-%{srcname}
@@ -119,6 +119,7 @@ popd
 %changelog
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.25.10-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+- Update minimal requirement of six to >= 1.12.0
 
 * Fri Jan 15 2021 Miro Hrončok <mhroncok@redhat.com> - 1.25.10-3
 - Drop redundant BuildRequires for nose
