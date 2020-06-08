@@ -6,7 +6,7 @@
 
 Name:           python-%{srcname}
 Version:        1.25.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python HTTP library with thread-safe connection pooling and file post
 
 License:        MIT
@@ -37,7 +37,7 @@ BuildRequires:  python3-idna
 
 Requires:       ca-certificates
 Requires:       python3-idna
-Requires:       python3-six
+Requires:       python3-six >= 1.12.0
 Requires:       python3-pysocks
 
 %description -n python3-%{srcname}
@@ -96,6 +96,9 @@ popd
 
 
 %changelog
+* Mon Jun 08 2020 Yatin Karel <ykarel@redhat.com> - 1.25.7-3
+- Update minimal requirement of six to >= 1.12.0
+
 * Mon Nov 18 2019 Miro Hrončok <mhroncok@redhat.com> - 1.25.7-2
 - Subpackage python2-urllib3 has been removed
   See https://fedoraproject.org/wiki/Changes/Mass_Python_2_Package_Removal
