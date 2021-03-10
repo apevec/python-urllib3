@@ -2,7 +2,7 @@
 %global srcname urllib3
 
 # When bootstrapping Python, we cannot test this yet
-%bcond_with tests
+%bcond_without tests
 
 Name:           python-%{srcname}
 Version:        1.25.10
